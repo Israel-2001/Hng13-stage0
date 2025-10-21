@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <nav aria-label="Main navigation">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="contact.html">Contact Us</a></li>
+        <li><a href="about.html">About Me</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main data-testid="test-contact-page">
+    <h1>Contact Us</h1>
+    <form id="contact-form" novalidate>
+      <fieldset>
+        <legend>Contact Information</legend>
+        <div class="form-group">
+          <label for="name">Full Name <span aria-hidden="true">*</span>:</label>
+          <input type="text" id="name" name="name" data-testid="test-contact-name" required aria-describedby="name-error">
+          <span id="name-error" class="error" data-testid="test-contact-error-name" aria-live="polite"></span>
+        </div>
+        <div class="form-group">
+          <label for="email">Email <span aria-hidden="true">*</span>:</label>
+          <input type="email" id="email" name="email" data-testid="test-contact-email" required aria-describedby="email-error">
+          <span id="email-error" class="error" data-testid="test-contact-error-email" aria-live="polite"></span>
+        </div>
+        <div class="form-group">
+          <label for="subject">Subject <span aria-hidden="true">*</span>:</label>
+          <input type="text" id="subject" name="subject" data-testid="test-contact-subject" required aria-describedby="subject-error">
+          <span id="subject-error" class="error" data-testid="test-contact-error-subject" aria-live="polite"></span>
+        </div>
+        <div class="form-group">
+          <label for="message">Message <span aria-hidden="true">*</span>:</label>
+          <textarea id="message" name="message" data-testid="test-contact-message" required minlength="10" aria-describedby="message-error" rows="5"></textarea>
+          <span id="message-error" class="error" data-testid="test-contact-error-message" aria-live="polite"></span>
+        </div>
+      </fieldset>
+      <button type="submit" data-testid="test-contact-submit">Submit</button>
+    </form>
+    <div id="success" class="success" data-testid="test-contact-success" role="alert" style="display: none;">
+      <h2>Success!</h2>
+      <p>Thank you for your message. We'll get back to you soon!</p>
+    </div>
+  </main>
+  <footer>
+    <p>&copy; 2025 My Portfolio</p>
+  </footer>
+  <script>
+    // Form validation logic (modular functions for readability)
+    const form = document.getElementById('contact-form');
+    const successDiv = document.getElementById('success');
+    const inputs = {
+      name: { el: document.getElementById('name'), error: document.getElementById('name-error') },
+      email: { el: document.getElementById('email'), error: document.getElementById('email-error') },
+      subject: { el: document.getElementById('subject'), error: document.getElementById('subject-error') },
+      message: { el: document.getElementById('message'), error: document.getElementById('message-error') }
+    };
+
+    function showError(inputEl, errorEl, message) {
+      inputEl.classList.add('invalid');
+      errorEl.textContent = message;
+      errorEl.classList.add('active');
+    }
+
+    function clearError(inputEl, errorEl) {
+      inputEl.classList.remove('invalid');
+      errorEl.textContent = '';
+      errorEl.classList.remove('active');
+    }
+
+    function validateInput(inputObj) {
+      const { el, error } = inputObj;
+      if (!el.validity.valid) {
+        if (el.validity.valueMissing) {
+          showError(el, error, `${el.name.charAt(0).toUpperCase() + el.name.slice(1)} is required.`);
+        } else if (el.validity.typeMismatch && el.type === 'email') {
+          showError(el, error, 'Please enter a valid email address (e.g., name@example.com).');
+        } else if (el.validity.tooShort) {
+          showError(el, error, 'Message must be at least 10 characters long.');
+        }
+        return false;
+      }
+      clearError(el, error);
+      return true;
+    }
+
+    // Real-time validation on input
+    Object.values(inputs).forEach(inputObj => {
+      inputObj.el.addEventListener('input', () => validateInput(inputObj));
+    });
+
+    // Submit handling
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      let isValid = true;
+      Object.values(inputs).forEach(inputObj => {
+        isValid = validateInput(inputObj) && isValid;
+      });
+      if (isValid) {
+        form.style.display = 'none';
+        successDiv.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
